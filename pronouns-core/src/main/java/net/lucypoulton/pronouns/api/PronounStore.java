@@ -44,6 +44,22 @@ public interface PronounStore {
     void setAll(Map<UUID, List<PronounSet>> sets);
 
     /**
+     * Adds to a player's existing pronouns.
+     *
+     * @param player         the player's UUID
+     * @param pronounsToAdd the pronouns to add. Each entry must be unique.
+     */
+    void addPronouns(UUID player, @NotNull List<PronounSet> pronounsToAdd);
+
+    /**
+     * Removes specific pronouns from a player's set pronouns.
+     *
+     * @param player            the player's UUID
+     * @param pronounsToRemove the pronouns to remove.
+     */
+    void removePronouns(UUID player, @NotNull List<PronounSet> pronounsToRemove);
+
+    /**
      * Gets a (possibly unmodifiable) map of every player and the pronouns they have set. This method may block.
      */
     Map<UUID, List<PronounSet>> dump();
