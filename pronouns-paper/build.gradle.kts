@@ -1,6 +1,6 @@
 plugins {
     java
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.gradleup.shadow") version "8.3.6"
     id("pronouns.conventions")
     id("pronouns.publishable")
 }
@@ -12,16 +12,16 @@ repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi")
 }
 
-val minecraftVersion = "1.19.3"
+val minecraftVersion = "1.21.5"
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:$minecraftVersion-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
     shadow(project(":pronouns-common"))
     shadow(libs.cloud.paper)
     shadow(libs.hikari) {
         exclude("org.slf4j")
     }
-    compileOnly("me.clip:placeholderapi:2.11.2")
+    compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly(libs.gson)
 }
 
@@ -50,4 +50,8 @@ modrinth {
     gameVersions.add(minecraftVersion)
     loaders.add("paper")
     versionName.set("$version for Paper")
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-Xlint:deprecation")
 }

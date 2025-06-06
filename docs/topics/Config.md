@@ -7,9 +7,6 @@ ProNouns can be configured by editing the configuration file. The file is a
 <tab title="Paper" group-key="paper">
 For Paper, the config file is at <path>plugins/ProNouns/pronouns.cfg</path>.
 </tab>
-<tab title="Fabric" group-key="fabric">
-For Fabric, the config file is at <path>config/pronouns.cfg</path>.
-</tab>
 </tabs>
 
 ## Store

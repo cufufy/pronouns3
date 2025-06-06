@@ -14,7 +14,7 @@ Stores pronouns alongside a player's data in the world file. This is the default
 
     {style="narrow"}
     Platforms
-    : Fabric, Paper
+    : Paper
 
 Flat file
 : 
