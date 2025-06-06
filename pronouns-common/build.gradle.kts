@@ -20,6 +20,8 @@ dependencies {
     compileOnly(libs.hikari)
 
     testImplementation("org.yaml:snakeyaml:1.33")
+    testImplementation("org.mockito:mockito-core:5.10.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.10.0")
 
 }
 

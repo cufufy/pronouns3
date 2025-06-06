@@ -5,7 +5,7 @@ import java.util.Locale;
 /**
  * A set that proxies pronouns from another but with a custom name.
  */
-class SpecialPronounSet implements PronounSet {
+public class SpecialPronounSet implements PronounSet {
 
 	private final PronounSet baseSet;
 	private final String name;

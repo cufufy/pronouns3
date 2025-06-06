@@ -19,7 +19,8 @@ public class StoreFactory {
     public PronounStore create(String key, ProNouns plugin) {
         return switch (key) {
             case "in_memory" -> new InMemoryPronounStore();
-            case "file" -> new FilePronounStore(plugin, plugin.platform().dataDir());
+            // Updated to pass the fully resolved path as the first argument
+            case "file" -> new FilePronounStore(plugin.platform().dataDir().resolve("pronouns-store.properties"), plugin);
             case "mysql" -> new MySqlPronounStore(plugin, plugin.platform().config().mysql());
             default -> {
                 final var supplier = suppliers.get(key);
