@@ -29,20 +29,28 @@ public class SetCommand implements ProNounsCommand {
             sender.sendMessage(f.translated("pronouns.command.noPlayer"));
             return;
         }
+
+        final List<PronounSet> pronouns;
         try {
-            final var pronouns = plugin.parser().parse(value);
-            plugin.store().set(player.uuid().get(), pronouns);
-            sender.sendMessage(
-                    f.translated("pronouns.command.set." + (target.isNotSender() ? "other" : "self"),
-                            PronounSet.format(pronouns),
-                            player.name()
-                    )
-            );
+            pronouns = plugin.parser().parse(value);
+        } catch (Exception e) {
+            // Catch any unexpected parsing errors, though PronounParser is expected to return empty list for bad user input
+            plugin.platform().logger().warning("Pronoun parsing unexpectedly failed for input '" + value + "': " + e.getMessage());
+            sender.sendMessage(f.translated("pronouns.command.set.parseError", value));
             return;
-        } catch (IllegalArgumentException ignored) {
         }
+
+        if (pronouns.isEmpty()) {
+            sender.sendMessage(f.translated("pronouns.command.set.badSet", value));
+            return;
+        }
+
+        plugin.store().set(player.uuid().get(), pronouns);
         sender.sendMessage(
-                f.translated("pronouns.command.set.badSet", value)
+                f.translated("pronouns.command.set." + (target.isNotSender() ? "other" : "self"),
+                        PronounSet.format(pronouns),
+                        player.name()
+                )
         );
     }
 

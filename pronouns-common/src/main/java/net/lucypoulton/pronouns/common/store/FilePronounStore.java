@@ -42,7 +42,7 @@ public class FilePronounStore implements PronounStore {
         sets.forEach(((uuid, pronounSets) -> props.put(uuid.toString(),
                 pronounSets.stream()
                         .map(PronounSet::toFullString)
-                        .collect(Collectors.joining("/"))
+                        .collect(Collectors.joining(";")) // Changed delimiter to semicolon
         )));
         try (final var outStream = Files.newOutputStream(path)) {
             props.store(outStream, header);
@@ -83,5 +83,45 @@ public class FilePronounStore implements PronounStore {
     @Override
     public Map<UUID, List<PronounSet>> dump() {
         return Collections.unmodifiableMap(sets);
+    }
+
+    @Override
+    public void addPronouns(UUID player, @NotNull List<PronounSet> pronounsToAdd) {
+        if (pronounsToAdd.isEmpty()) {
+            return;
+        }
+        final List<PronounSet> currentSets = new ArrayList<>(sets(player));
+
+        if (currentSets.size() == 1 && currentSets.get(0).equals(PronounSet.Builtins.UNSET)) {
+            if (pronounsToAdd.size() == 1 && pronounsToAdd.get(0).equals(PronounSet.Builtins.UNSET)) {
+                return;
+            }
+            currentSets.clear();
+        }
+
+        for (final PronounSet toAdd : pronounsToAdd) {
+            if (!currentSets.contains(toAdd)) {
+                currentSets.add(toAdd);
+            }
+        }
+        set(player, currentSets); // set already calls save
+    }
+
+    @Override
+    public void removePronouns(UUID player, @NotNull List<PronounSet> pronounsToRemove) {
+        if (pronounsToRemove.isEmpty()) {
+            return;
+        }
+        final List<PronounSet> currentSets = new ArrayList<>(sets(player));
+
+        if (currentSets.size() == 1 && currentSets.get(0).equals(PronounSet.Builtins.UNSET)) {
+            if (pronounsToRemove.contains(PronounSet.Builtins.UNSET)) {
+                set(player, Collections.emptyList()); // Clears the entry and saves
+            }
+            return;
+        }
+
+        currentSets.removeAll(pronounsToRemove);
+        set(player, currentSets); // set already calls save
     }
 }
