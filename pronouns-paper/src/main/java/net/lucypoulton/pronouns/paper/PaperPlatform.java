@@ -43,7 +43,7 @@ public class PaperPlatform implements Platform {
 
     @Override
     public String currentVersion() {
-        return plugin.getDescription().getVersion();
+        return plugin.getPluginMeta().getVersion();
     }
 
     @Override

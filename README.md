@@ -4,6 +4,8 @@ This is a work-in-progress rewrite of my plugin [ProNouns](https://github.com/lu
 ProNouns is a plugin that lets players set their pronouns, making their experience on the server that little bit more
 personal.
 
+**Supports Minecraft 1.21.5 (Paper, Velocity).**
+
 [Docs (temporary link)](https://lucyydotp.github.io/pronouns3/getting-started.html)
 
 ## THIS IS PRE-RELEASE SOFTWARE
@@ -18,7 +20,7 @@ I assume absolutely no responsibility if this plugin breaks anything - use at yo
 - Support for PlaceholderAPI with tools to properly form sentences including players' pronouns
 - Store players' pronouns in multiple places, including MySQL for network compatibility
 - Extensible through a developer API
-- Support for many platforms - Paper, Sponge, Fabric, BungeeCord, Velocity
+- Support for many platforms - Paper, Velocity. Sponge and BungeeCord support is planned.
 
 # Installation
 
@@ -27,12 +29,6 @@ All releases are hosted at https://modrinth.com/plugin/pronouns.
 ### Paper
 
 Download the Paper jarfile and place it into your `plugins` folder. Restart your server.
-
-### Fabric
-
-*N.B. this is a server-side mod. While it technically will work on the client, using the integrated server,
-it won't achieve a lot!*<br/>
-Download the Fabric jarfile and place it into your `mods` folder. Restart your server.
 
 ### Sponge, Velocity, BungeeCord
 

@@ -105,7 +105,7 @@ public class UpdateChecker {
         if (platform.currentVersion().equals(version.name)) return;
         this.availableUpdate = version;
         platform.broadcast(Component.translatable(
-                        "pronouns.update").args(
+                        "pronouns.update").arguments(
                         f.accent(version.displayName),
                         f.accent("Modrinth")
                                 .clickEvent(ClickEvent.openUrl(version.url))

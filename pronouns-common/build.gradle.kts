@@ -22,3 +22,7 @@ dependencies {
     testImplementation("org.yaml:snakeyaml:1.33")
 
 }
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-Xlint:deprecation")
+}
