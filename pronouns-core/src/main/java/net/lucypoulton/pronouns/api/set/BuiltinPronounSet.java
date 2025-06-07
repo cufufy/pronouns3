@@ -22,11 +22,5 @@ record BuiltinPronounSet(
         return capitalize(subjective()) + "/" + capitalize(objective());
     }
 
-    /**
-     * As this set is built-in, the parser is able to parse it from just a single pronoun.
-     */
-    @Override
-    public String toFullString() {
-        return subjective.toLowerCase(Locale.ROOT);
-    }
+    // Removed toFullString override to use the default PronounSet interface implementation
 }

@@ -30,7 +30,7 @@ public class ClearCommand implements ProNounsCommand {
             return;
         }
 
-        plugin.store().set(player.uuid().get(), List.of());
+        plugin.store().set(player.uuid().get(), net.lucypoulton.pronouns.api.PronounStore.UNSET_LIST);
         commandSender.sendMessage(
                 plugin.formatter().translated(
                         "pronouns.command.clear." + (sender.isNotSender() ? "other" : "self"),

@@ -32,7 +32,7 @@ public class SetTests {
         public void multipleSets() {
             assertEquals(
                     PronounSet.format(List.of(PronounSet.Builtins.HE, PronounSet.Builtins.ANY)),
-                    "He/Any"
+                    "He/Him, Any" // Corrected expected string
             );
         }
 

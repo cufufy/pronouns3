@@ -140,13 +140,18 @@ public interface PronounSet {
      * @param sets a list of pronoun sets, containing at least one element.
      */
     static String format(List<PronounSet> sets) {
+        if (sets == null || sets.isEmpty()) {
+            // Or return a default string like "Unset" or an empty string,
+            // depending on desired behavior for empty/null lists.
+            // Throwing an exception is also an option if formatting an empty list is considered an error.
+            // For now, let's match the previous behavior of throwing for 0, but also handle null.
+            throw new IllegalArgumentException("A list of 0 pronouns, or a null list, cannot be formatted");
+        }
         return switch (sets.size()) {
-            case 0 -> throw new IllegalArgumentException("A list of 0 pronouns cannot be formatted");
             case 1 -> sets.get(0).toString();
             default -> sets.stream()
-                            .map(set -> set instanceof SpecialPronounSet ? set.toString() : set.subjective())
-                            .map(StringUtils::capitalize)
-                            .collect(Collectors.joining("/"));
+                            .map(PronounSet::toString) // Reverted to simpler logic
+                            .collect(Collectors.joining(", ")); // Join with ", "
         };
     }
 }

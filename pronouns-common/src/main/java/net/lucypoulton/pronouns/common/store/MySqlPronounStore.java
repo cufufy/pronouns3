@@ -12,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList; // Added import
+import java.util.Collections; // Added import
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -74,7 +76,7 @@ public class MySqlPronounStore implements CachedPronounStore, AutoCloseable {
             }
             final var stmt = con.prepareStatement("REPLACE INTO pronouns (player, pronouns, last_updated_from) VALUES (?, ?, ?)");
             stmt.setBytes(1, UuidUtil.toBytes(uuid));
-            stmt.setString(2, parser.toString(sets));
+            stmt.setString(2, sets.stream().map(PronounSet::toFullString).collect(java.util.stream.Collectors.joining(";")));
             stmt.setString(3, plugin.meta().identifier());
             stmt.execute();
         } catch (SQLException e) {
@@ -87,7 +89,7 @@ public class MySqlPronounStore implements CachedPronounStore, AutoCloseable {
             final var stmt = con.prepareStatement("REPLACE INTO pronouns (player, pronouns, last_updated_from) VALUES (?, ?, ?)");
             for (final var entry : sets.entrySet()) {
                 stmt.setBytes(1, UuidUtil.toBytes(entry.getKey()));
-                stmt.setString(2, parser.toString(entry.getValue()));
+                stmt.setString(2, entry.getValue().stream().map(PronounSet::toFullString).collect(java.util.stream.Collectors.joining(";")));
                 stmt.setString(3, plugin.meta().identifier());
                 stmt.addBatch();
             }
@@ -130,6 +132,65 @@ public class MySqlPronounStore implements CachedPronounStore, AutoCloseable {
             lastTimestamp = Instant.now();
         } catch (Exception e) {
             plugin.platform().logger().error("Failed to update pronoun cache from MySQL: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void addPronouns(UUID player, @NotNull List<PronounSet> pronounsToAdd) {
+        if (pronounsToAdd.isEmpty()) {
+            return;
+        }
+        final List<PronounSet> currentSets = new ArrayList<>(sets(player));
+
+        if (currentSets.size() == 1 && currentSets.get(0).equals(PronounSet.Builtins.UNSET)) {
+            if (pronounsToAdd.size() == 1 && pronounsToAdd.get(0).equals(PronounSet.Builtins.UNSET)) {
+                return;
+            }
+            currentSets.clear();
+        }
+
+        for (final PronounSet toAdd : pronounsToAdd) {
+            if (!currentSets.contains(toAdd)) {
+                currentSets.add(toAdd);
+            }
+        }
+        // Update cache immediately
+        if (currentSets.isEmpty()) {
+            cache.remove(player);
+        } else {
+            cache.put(player, currentSets);
+        }
+        // Asynchronously push to database
+        final List<PronounSet> setsToPush = List.copyOf(currentSets); // Make a copy for the async task
+        plugin.executorService().submit(() -> push(player, setsToPush));
+    }
+
+    @Override
+    public void removePronouns(UUID player, @NotNull List<PronounSet> pronounsToRemove) {
+        if (pronounsToRemove.isEmpty()) {
+            return;
+        }
+        final List<PronounSet> currentSets = new ArrayList<>(sets(player));
+
+        if (currentSets.size() == 1 && currentSets.get(0).equals(PronounSet.Builtins.UNSET)) {
+            if (pronounsToRemove.contains(PronounSet.Builtins.UNSET)) {
+                cache.remove(player);
+                plugin.executorService().submit(() -> push(player, Collections.emptyList()));
+            }
+            return;
+        }
+
+        boolean changed = currentSets.removeAll(pronounsToRemove);
+        if (changed) {
+            // Update cache immediately
+            if (currentSets.isEmpty()) {
+                cache.remove(player);
+            } else {
+                cache.put(player, currentSets);
+            }
+            // Asynchronously push to database
+            final List<PronounSet> setsToPush = List.copyOf(currentSets); // Make a copy for the async task
+            plugin.executorService().submit(() -> push(player, setsToPush));
         }
     }
 

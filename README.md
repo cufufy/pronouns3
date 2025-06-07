@@ -12,15 +12,16 @@ personal.
 
 I assume absolutely no responsibility if this plugin breaks anything - use at your own risk.
 
-### Planned feature list
+### Features
 
-- Players can set their pronouns individually
-- Players can have multiple pronoun sets
-- Custom player-defined custom pronouns / neopronouns support
-- Support for PlaceholderAPI with tools to properly form sentences including players' pronouns
-- Store players' pronouns in multiple places, including MySQL for network compatibility
-- Extensible through a developer API
-- Support for many platforms - Paper, Velocity. Sponge and BungeeCord support is planned.
+- **Individual Pronouns:** Players can set their pronouns to personalize their experience.
+- **Multiple Pronoun Sets:** Players can define and use multiple sets of pronouns (e.g., she/her and they/them).
+- **Custom Pronouns/Neopronouns:** Full support for player-defined custom pronouns with correct grammatical conjugation.
+- **PlaceholderAPI Support:** Extensive PlaceholderAPI integration, allowing for grammatically correct sentence construction using player pronouns, including support for multiple and custom sets with indexed access.
+- **Flexible Data Storage:** Options to store pronoun data, including MySQL for network-wide compatibility.
+- **Developer API:** Extensible API for other plugins to interact with pronoun data.
+- **Platform Support:** Currently supports Paper and Velocity. Sponge and BungeeCord support is planned.
+
 
 # Installation
 

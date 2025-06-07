@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.lucypoulton.pronouns.api.util.StringUtils.capitalize;
 
-record SimplePronounSet(
+public record SimplePronounSet(
         @NotNull String subjective,
         @NotNull String objective,
         @NotNull String possessiveAdj,

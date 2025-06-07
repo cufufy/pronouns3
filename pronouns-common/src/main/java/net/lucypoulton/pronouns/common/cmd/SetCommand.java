@@ -7,10 +7,13 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.meta.CommandMeta;
 import net.lucypoulton.pronouns.api.set.PronounSet;
 import net.lucypoulton.pronouns.common.ProNouns;
+import net.lucypoulton.pronouns.common.message.ProNounsTranslations; // Added import
 import net.lucypoulton.pronouns.common.platform.CommandSender;
 import net.lucypoulton.pronouns.common.platform.ProNounsPermission;
 import net.lucypoulton.pronouns.common.platform.Platform;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List; // Added import
 
 public class SetCommand implements ProNounsCommand {
     private final ProNouns plugin;
@@ -29,20 +32,40 @@ public class SetCommand implements ProNounsCommand {
             sender.sendMessage(f.translated("pronouns.command.noPlayer"));
             return;
         }
+
+        final List<PronounSet> pronouns;
         try {
-            final var pronouns = plugin.parser().parse(value);
-            plugin.store().set(player.uuid().get(), pronouns);
-            sender.sendMessage(
-                    f.translated("pronouns.command.set." + (target.isNotSender() ? "other" : "self"),
-                            PronounSet.format(pronouns),
-                            player.name()
-                    )
-            );
+            pronouns = plugin.parser().parse(value);
+        } catch (Exception e) {
+            // Catch any unexpected parsing errors, though PronounParser is expected to return empty list for bad user input
+            plugin.platform().logger().warn("Pronoun parsing unexpectedly failed for input '" + value + "': " + e.getMessage()); // Changed to warn
+            sender.sendMessage(f.translated("pronouns.command.set.parseError", value));
             return;
-        } catch (IllegalArgumentException ignored) {
         }
+
+        if (pronouns.isEmpty()) {
+            sender.sendMessage(f.translated("pronouns.command.set.badSet", value));
+            return;
+        }
+
+        // Implement "Ask" exclusivity
+        boolean containsAsk = pronouns.stream().anyMatch(p -> p.equals(PronounSet.Builtins.ASK));
+        final List<PronounSet> finalPronounsToSet;
+        if (containsAsk && pronouns.size() > 1) {
+            finalPronounsToSet = List.of(PronounSet.Builtins.ASK);
+            // Send a message to the player informing them of this override.
+            // The original sender gets this message, even if they are setting for someone else.
+            sender.sendMessage(f.translated("pronouns.command.set.askOverride")); // Use f.translated with string key
+        } else {
+            finalPronounsToSet = pronouns;
+        }
+
+        plugin.store().set(player.uuid().get(), finalPronounsToSet);
         sender.sendMessage(
-                f.translated("pronouns.command.set.badSet", value)
+                f.translated("pronouns.command.set." + (target.isNotSender() ? "other" : "self"),
+                        PronounSet.format(finalPronounsToSet),
+                        player.name()
+                )
         );
     }
 

@@ -27,7 +27,8 @@ public class GetCommand implements ProNounsCommand {
             return;
         }
         final var pronouns = plugin.store().sets(targetPlayer.uuid().get());
-        if (pronouns.size() == 1 && pronouns.get(0).equals(PronounSet.Builtins.UNSET)) {
+        // Check if the list is empty or explicitly UNSET_LIST
+        if (pronouns.isEmpty() || pronouns.equals(net.lucypoulton.pronouns.api.PronounStore.UNSET_LIST)) {
             sender.sendMessage(
                     f.translated("pronouns.command.get.unset." + (targetCommandSender.isNotSender() ? "other" : "self"),
                             targetPlayer.name()));
