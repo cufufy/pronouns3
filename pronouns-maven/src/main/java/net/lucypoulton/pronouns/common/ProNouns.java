@@ -27,7 +27,7 @@ public class ProNouns implements ProNounsPlugin {
         thread.setName("ProNouns worker");
         return thread;
     });
-    private final PronounParser parser;
+    private PronounParser parser;
     private final Platform platform;
     private final PluginMeta meta;
     private final Placeholders placeholders = new Placeholders(this);
@@ -39,7 +39,6 @@ public class ProNouns implements ProNounsPlugin {
     public ProNouns(Platform platform) {
         this.platform = platform;
         this.formatter = new Formatter(platform);
-        this.parser = new PronounParser(() -> store.predefined().get());
         this.meta = new PluginMeta(platform);
 
         platform.logger().info(meta.identifier());
@@ -103,6 +102,7 @@ public class ProNouns implements ProNounsPlugin {
 
     public void createStore(StoreFactory factory) {
         this.store = factory.create(platform.config().store().toLowerCase(Locale.ROOT).trim(), this);
+        this.parser = new PronounParser(() -> store.predefined().get());
     }
 
     public void reload() {
