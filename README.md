@@ -1,7 +1,7 @@
-# ProNouns
+# Pronouns
 
-This is a work-in-progress rewrite of my plugin [ProNouns](https://github.com/lucypoulton/pronouns).
-ProNouns is a plugin that lets players set their pronouns, making their experience on the server that little bit more
+This is a work-in-progress rewrite of my plugin [Pronouns](https://github.com/lucypoulton/pronouns).
+Pronouns is a plugin that lets players set their pronouns, making their experience on the server that little bit more
 personal.
 
 **Supports Minecraft 1.21.5 (Paper, Velocity).**
@@ -37,5 +37,5 @@ Support for these three platforms is planned but not yet implemented.
 
 # Data collection
 
-ProNouns anonymously collects some statistics, similar to bStats. Details of what's collected, your rights, and how to 
+Pronouns anonymously collects some statistics, similar to bStats. Details of what's collected, your rights, and how to
 opt out can be found at the documentation page.
