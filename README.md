@@ -23,17 +23,16 @@ I assume absolutely no responsibility if this plugin breaks anything - use at yo
 - **Platform Support:** Currently supports Paper and Velocity. Sponge and BungeeCord support is planned.
 
 
-# Installation
-
-All releases are hosted at https://modrinth.com/plugin/pronouns.
-
 ### Paper
 
 Download the Paper jarfile and place it into your `plugins` folder. Restart your server.
 
-### Sponge, Velocity, BungeeCord
 
-Support for these three platforms is planned but not yet implemented.
+### Placeholders
+
+%pronouns_subjective_1%
+%pronouns_all%
+%pronouns_pronouns%
 
 # Data collection
 
