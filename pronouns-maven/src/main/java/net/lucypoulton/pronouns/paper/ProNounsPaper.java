@@ -1,6 +1,7 @@
 package net.lucypoulton.pronouns.paper;
 
 import net.lucypoulton.pronouns.common.ProNouns;
+import net.lucypoulton.pronouns.common.analytics.Metrics;
 import net.lucypoulton.pronouns.common.platform.ProNounsPermission;
 import net.lucypoulton.pronouns.common.store.StoreFactory;
 import org.bukkit.Bukkit;
@@ -44,6 +45,10 @@ public final class ProNounsPaper extends JavaPlugin {
             getLogger().info("Registering PlaceholderAPI hook.");
             new PlaceholderAPIHook(plugin, platform).register();
         }
+
+        // bStats Metrics
+        int pluginId = 26252; // Your plugin ID
+        Metrics metrics = new Metrics(this, pluginId);
     }
 
     public ProNouns getPlugin() {

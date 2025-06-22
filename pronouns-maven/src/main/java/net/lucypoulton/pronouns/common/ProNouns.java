@@ -41,7 +41,7 @@ public class ProNouns implements ProNounsPlugin {
         this.formatter = new Formatter(platform);
         this.meta = new PluginMeta(platform);
 
-        platform.logger().info(meta.identifier());
+        // platform.logger().info(meta.identifier()); // Removed as identifier is no longer part of PluginMeta
 
         GlobalTranslator.translator().addSource(ProNounsTranslations.registry());
         final var commandManager = platform.commandManager();
@@ -92,11 +92,6 @@ public class ProNouns implements ProNounsPlugin {
             platform.logger().warn(isDevelopmentVersion ?
                     "Development version " + platform.currentVersion() + ", disabling update checker." :
                     ProNounsTranslations.translate("pronouns.update.disabled"));
-        }
-
-        if (platform.config().stats()) {
-            final var stats = new Statistics(this, platform);
-            executorService.scheduleAtFixedRate(stats::send, 5, 15, TimeUnit.MINUTES);
         }
     }
 
