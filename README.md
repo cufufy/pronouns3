@@ -1,12 +1,8 @@
 # Pronouns
 
-This is a work-in-progress rewrite of my plugin [Pronouns](https://github.com/lucypoulton/pronouns).
-Pronouns is a plugin that lets players set their pronouns, making their experience on the server that little bit more
-personal.
+Pronouns is a plugin that lets players set their pronouns. This was made for the Pride event in ClassiCraft, but is being open to the public for public use! 
 
-**Supports Minecraft 1.21.5 (Paper, Velocity).**
-
-[Docs (temporary link)](https://lucyydotp.github.io/pronouns3/getting-started.html)
+**Supports Minecraft 1.21.5+ (Paper).**
 
 ## THIS IS PRE-RELEASE SOFTWARE
 
