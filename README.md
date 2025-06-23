@@ -1,6 +1,8 @@
 # Pronouns
 
-Pronouns is a plugin that lets players set their pronouns. This was made for the Pride event in ClassiCraft, but is being open to the public for public use! 
+Pronouns is a plugin that lets players set their pronouns. This was made for the Pride event in ClassiCraft, but is being opened to the public for public use! 
+
+To s et multiple pronouns, use on of two formats: "She/her;They/Them" or "She/They"
 
 **Supports Minecraft 1.21.5+ (Paper).**
 
