@@ -53,7 +53,7 @@ public class UpdateChecker {
     public record Version(String displayName, String name, String channel, String url) {
     }
 
-    private static final String PROJECT_ID = "pronouns";
+    private static final String PROJECT_ID = "pronounsadvanced";
     private final ProNouns plugin;
     private final Platform platform;
     private final URI uri;

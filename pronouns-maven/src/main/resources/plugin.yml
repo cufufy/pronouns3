@@ -1,7 +1,7 @@
 name: ProNouns
 version: '${version}'
 main: net.cufufy.pronouns.paper.ProNounsPaper
-api-version: 1.19
+api-version: 1.21
 authors: [cufufy]
 website: https://cufufy.net
 softdepend: [PlaceholderAPI]
