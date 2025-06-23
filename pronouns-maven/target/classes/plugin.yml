@@ -1,5 +1,5 @@
 name: ProNouns
-version: '${version}'
+version: '3.0.0-SNAPSHOT'
 main: net.cufufy.pronouns.paper.ProNounsPaper
 api-version: 1.19
 authors: [cufufy]
