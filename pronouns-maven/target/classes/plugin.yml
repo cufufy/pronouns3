@@ -1,0 +1,9 @@
+name: ProNouns
+version: '3.0.0-SNAPSHOT'
+main: net.lucypoulton.pronouns.paper.ProNounsPaper
+api-version: 1.19
+authors: [lucyydotp]
+website: https://lucypoulton.net
+softdepend: [PlaceholderAPI]
+
+# commands and permissions are defined at runtime

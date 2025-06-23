@@ -98,6 +98,12 @@
             <version>${annotations.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.2</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -143,6 +149,10 @@
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
                                     <shadedPattern>net.lucypoulton.pronouns.shadow.hikari</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>net.lucypoulton.pronouns.shadow.bstats</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>

@@ -77,7 +77,7 @@ public class MySqlPronounStore implements CachedPronounStore, AutoCloseable {
             final var stmt = con.prepareStatement("REPLACE INTO pronouns (player, pronouns, last_updated_from) VALUES (?, ?, ?)");
             stmt.setBytes(1, UuidUtil.toBytes(uuid));
             stmt.setString(2, sets.stream().map(PronounSet::toFullString).collect(java.util.stream.Collectors.joining(";")));
-            stmt.setString(3, plugin.meta().identifier());
+            stmt.setString(3, "pronouns_plugin_instance"); // Replaced plugin.meta().identifier()
             stmt.execute();
         } catch (SQLException e) {
             plugin.platform().logger().error("Failed to write pronouns to MySQL: " + e.getMessage());
@@ -90,7 +90,7 @@ public class MySqlPronounStore implements CachedPronounStore, AutoCloseable {
             for (final var entry : sets.entrySet()) {
                 stmt.setBytes(1, UuidUtil.toBytes(entry.getKey()));
                 stmt.setString(2, entry.getValue().stream().map(PronounSet::toFullString).collect(java.util.stream.Collectors.joining(";")));
-                stmt.setString(3, plugin.meta().identifier());
+                stmt.setString(3, "pronouns_plugin_instance"); // Replaced plugin.meta().identifier()
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -115,7 +115,7 @@ public class MySqlPronounStore implements CachedPronounStore, AutoCloseable {
                     "SELECT * FROM pronouns WHERE last_updated_at > ? AND last_updated_from != ?"
             );
             stmt.setTimestamp(1, Timestamp.from(lastTimestamp));
-            stmt.setString(2, plugin.meta().identifier());
+            stmt.setString(2, "pronouns_plugin_instance"); // Replaced plugin.meta().identifier()
             final var results = stmt.executeQuery();
             while (results.next()) {
                 final var uuid = UuidUtil.fromBytes(results.getBytes("player"));

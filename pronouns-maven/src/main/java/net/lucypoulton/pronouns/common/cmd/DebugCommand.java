@@ -44,7 +44,8 @@ public class DebugCommand implements ProNounsCommand {
                 .meta(CommandMeta.DESCRIPTION, CommandUtils.description("debug"))
                 .handler(ctx -> ctx.getSender().sendMessage(Component.text(
                         String.format(DEBUG_FORMAT, platform.currentVersion(), platform.name(), platform.config().updateChannel(),
-                                plugin.meta().identifier(),
+                                // plugin.meta().identifier(), // Identifier removed
+                                "N/A", // Placeholder for the removed identifier
                                 shortenedClassName(plugin.store().getClass()),
                                 shortenedClassName(platform.config().getClass()),
                                 plugin.store().predefined().get().size()

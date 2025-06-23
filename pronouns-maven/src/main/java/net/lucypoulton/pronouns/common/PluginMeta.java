@@ -11,7 +11,6 @@ import java.util.UUID;
 
 public class PluginMeta {
     private final boolean isFirstRun;
-    private final String identifier;
     private final String lastPluginVersion;
     private final Platform platform;
     private final Path filePath;
@@ -19,7 +18,6 @@ public class PluginMeta {
     private void save() {
         try (final var stream = Files.newOutputStream(filePath)) {
             final var props = new Properties();
-            props.put("identifier", identifier);
             props.put("lastPluginVersion", platform.currentVersion());
             props.store(stream, """
                     ProNouns meta file.
@@ -34,35 +32,35 @@ public class PluginMeta {
         this.platform = platform;
         filePath = platform.dataDir().resolve("pronouns-meta.cfg");
         try {
-            CheckValidFile:
             if (Files.exists(filePath)) {
                 final var fileData = PropertiesUtil.fromFile(filePath);
-                final var identifier = (String) fileData.get("identifier");
                 final var lastPluginVersion = (String) fileData.get("lastPluginVersion");
-                if (identifier == null || lastPluginVersion == null) {
+                if (lastPluginVersion == null) {
                     platform.logger().warn("""
                     Meta file has been tampered with!
                     pronouns-meta.cfg is not intended for editing.
                     Recreating it now.""");
-                    break CheckValidFile;
+                    // Recreate the file if lastPluginVersion is missing
+                    this.lastPluginVersion = platform.currentVersion();
+                    this.isFirstRun = true;
+                    save();
+                    return;
                 }
 
-                this.identifier = identifier;
                 this.lastPluginVersion = lastPluginVersion;
                 this.isFirstRun = false;
+                // Update lastPluginVersion if it's different from current
+                if (!this.lastPluginVersion.equals(platform.currentVersion())) {
+                    save();
+                }
                 return;
             }
-            identifier = UUID.randomUUID().toString();
             lastPluginVersion = platform.currentVersion();
             this.isFirstRun = true;
             save();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public String identifier() {
-        return identifier;
     }
 
     public String lastPluginVersion() {
