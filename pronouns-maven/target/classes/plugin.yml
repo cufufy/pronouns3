@@ -1,9 +1,0 @@
-name: ProNouns
-version: '3.0.0-SNAPSHOT'
-main: net.cufufy.pronouns.paper.ProNounsPaper
-api-version: 1.21
-authors: [cufufy]
-website: https://cufufy.net
-softdepend: [PlaceholderAPI]
-
-# commands and permissions are defined at runtime
