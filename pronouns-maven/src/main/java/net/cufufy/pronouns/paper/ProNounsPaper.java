@@ -47,8 +47,13 @@ public final class ProNounsPaper extends JavaPlugin {
         }
 
         // bStats Metrics
-        int pluginId = 26256; // Your plugin ID
-        Metrics metrics = new Metrics(this, pluginId);
+        if (platform.config().stats()) {
+            int pluginId = 26256; // Your plugin ID
+            Metrics metrics = new Metrics(this, pluginId);
+            getLogger().info("bStats metrics enabled.");
+        } else {
+            getLogger().info("bStats metrics disabled by config.");
+        }
     }
 
     public ProNouns getPlugin() {
