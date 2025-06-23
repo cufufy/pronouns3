@@ -1,4 +1,4 @@
-name: ProNouns
+name: PronounsAdvanced
 version: '${version}'
 main: net.cufufy.pronouns.paper.ProNounsPaper
 api-version: 1.21

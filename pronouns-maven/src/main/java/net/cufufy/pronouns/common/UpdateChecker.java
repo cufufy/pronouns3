@@ -58,8 +58,6 @@ public class UpdateChecker {
     private final Platform platform;
     private final URI uri;
 
-    private final Channel updateChannel = Channel.ALPHA;
-
     private @Nullable Version availableUpdate;
 
     public Optional<Version> availableUpdate() {
@@ -91,12 +89,12 @@ public class UpdateChecker {
                         v.get("version_type").getAsString(),
                         "https://modrinth.com/project/" + PROJECT_ID + "/version/" + v.get("id").getAsString()
                 ))
-                .filter(v -> updateChannel.types().contains(v.channel))
+                .filter(v -> this.plugin.platform().config().updateChannel().types().contains(v.channel))
                 .findFirst()
                 .orElseThrow(() -> new UpdateCheckException(
                         String.format("No versions are available for %s (%s)",
                                 platform.name(),
-                                updateChannel.name().toLowerCase(Locale.ROOT))
+                                this.plugin.platform().config().updateChannel().name().toLowerCase(Locale.ROOT))
                 ));
     }
 
