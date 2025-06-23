@@ -47,7 +47,7 @@ public final class ProNounsPaper extends JavaPlugin {
         }
 
         // bStats Metrics
-        int pluginId = 26252; // Your plugin ID
+        int pluginId = 26256; // Your plugin ID
         Metrics metrics = new Metrics(this, pluginId);
     }
 
