@@ -125,12 +125,16 @@ public interface PronounSet {
          */
         public static final PronounSet UNSET = new SpecialPronounSet(THEY, "Unset");
 
+        /**
+         * The it/its pronoun set.
+         */
+        public static final PronounSet IT = new BuiltinPronounSet("it", "it", "its", "its", "itself", false);
     }
 
     /**
      * A supplier for all pronound defined in {@link Builtins}, except for {@link Builtins#UNSET}.
      */
-    PronounSupplier builtins = () -> Set.of(Builtins.THEY, Builtins.HE, Builtins.SHE, Builtins.ANY, Builtins.ASK);
+    PronounSupplier builtins = () -> Set.of(Builtins.THEY, Builtins.HE, Builtins.SHE, Builtins.IT, Builtins.ANY, Builtins.ASK);
 
     /**
      * Formats a list of pronoun sets.

@@ -103,20 +103,11 @@ public class PronounParser {
 			PronounSet foundSet = predefinedLookup.get(trimmedPart.toLowerCase(Locale.ROOT));
 
 			if (foundSet != null) {
-                // Canonicalization: Ensure we use the static Builtins instances if the retrieved set
-                // is content-equivalent to a known Builtin.
-                PronounSet canonicalSet = foundSet; // Start with what was found
-
-                // Check against Special Sets by their unique names (toString() is their name, e.g., "Ask")
-                // No need to check foundSet != PronounSet.Builtins.XXX here because if it is, it's already canonical.
+                // Canonicalization logic (remains the same)
+                PronounSet canonicalSet = foundSet;
                 if (foundSet.toString().equalsIgnoreCase(PronounSet.Builtins.ASK.toString())) canonicalSet = PronounSet.Builtins.ASK;
                 else if (foundSet.toString().equalsIgnoreCase(PronounSet.Builtins.ANY.toString())) canonicalSet = PronounSet.Builtins.ANY;
                 else if (foundSet.toString().equalsIgnoreCase(PronounSet.Builtins.UNSET.toString())) canonicalSet = PronounSet.Builtins.UNSET;
-
-                // Check against other Builtins (HE, SHE, THEY) by comparing all 5 grammatical forms and plurality.
-                // This is the most robust way if .equals() between SimplePronounSet and BuiltinPronounSet is not reliable.
-                // This assumes that if foundSet is not one of the special sets above, it might be a SimplePronounSet
-                // from the supplier that mimics HE, SHE, or THEY.
                 else if (
                     foundSet.subjective().equalsIgnoreCase(PronounSet.Builtins.HE.subjective()) &&
                     foundSet.objective().equalsIgnoreCase(PronounSet.Builtins.HE.objective()) &&
@@ -141,15 +132,38 @@ public class PronounParser {
                     foundSet.reflexive().equalsIgnoreCase(PronounSet.Builtins.THEY.reflexive()) &&
                     foundSet.plural() == PronounSet.Builtins.THEY.plural()
                 ) canonicalSet = PronounSet.Builtins.THEY;
-                // Note: PronounSet.Builtins.IT is not a standard static final field in the provided Builtins class.
+                else if ( // Added IT canonicalization
+                    foundSet.subjective().equalsIgnoreCase(PronounSet.Builtins.IT.subjective()) &&
+                    foundSet.objective().equalsIgnoreCase(PronounSet.Builtins.IT.objective()) &&
+                    foundSet.possessiveAdj().equalsIgnoreCase(PronounSet.Builtins.IT.possessiveAdj()) &&
+                    foundSet.possessive().equalsIgnoreCase(PronounSet.Builtins.IT.possessive()) &&
+                    foundSet.reflexive().equalsIgnoreCase(PronounSet.Builtins.IT.reflexive()) &&
+                    foundSet.plural() == PronounSet.Builtins.IT.plural()
+                ) canonicalSet = PronounSet.Builtins.IT;
 
-				resultSet.add(canonicalSet); // Add the (now definitively canonicalized if matched) set
+				resultSet.add(canonicalSet);
 				continue;
 			}
 
-            // If not found in predefinedLookup, try parsing as custom
-            // Use original casing for splitting custom parts, but trim them.
-            String[] components = trimmedPart.split("/");
+            // Try parsing as "subjective1/subjective2" shorthand
+            String[] shorthandComponents = trimmedPart.split("/");
+            if (shorthandComponents.length == 2) {
+                String key1 = shorthandComponents[0].trim().toLowerCase(Locale.ROOT);
+                String key2 = shorthandComponents[1].trim().toLowerCase(Locale.ROOT);
+
+                PronounSet set1 = findPredefinedBySubjectiveOrShortform(key1);
+                PronounSet set2 = findPredefinedBySubjectiveOrShortform(key2);
+
+                if (set1 != null && set2 != null && !set1.equals(set2)) {
+                    // Canonicalize both before adding
+                    resultSet.add(canonicalize(set1));
+                    resultSet.add(canonicalize(set2));
+                    continue; // Successfully parsed as shorthand
+                }
+            }
+
+            // If not found in predefinedLookup and not a shorthand, try parsing as custom 5-part
+            String[] components = trimmedPart.split("/"); // Re-split, or use shorthandComponents if careful
             if (components.length == 5) {
                 try {
                     String subjective = components[0].trim();
@@ -211,4 +225,106 @@ public class PronounParser {
                 })
 				.collect(Collectors.joining(";"));
 	}
+
+    public List<String> getAvailablePronounNames() {
+        // Collect all keys from predefinedLookup
+        // Also add string representations of Builtins that might not be keys themselves
+        // (e.g. if a Builtin's primary key is "he/him/his/his/himself" but "he/him" is also common)
+        Set<String> names = new LinkedHashSet<>(this.predefinedLookup.keySet());
+
+        // Add common forms of builtins to ensure they are suggested
+        // These might already be in predefinedLookup via addToMap in constructor,
+        // but LinkedHashSet handles duplicates.
+        names.add(PronounSet.Builtins.HE.toString()); // he/him
+        names.add(PronounSet.Builtins.SHE.toString()); // she/her
+        names.add(PronounSet.Builtins.THEY.toString()); // they/them
+        names.add(PronounSet.Builtins.IT.toString()); // it/its (If IT is added to Builtins)
+
+        // Add full forms as well, as these are also valid inputs
+        names.add(PronounSet.Builtins.HE.toFullString());
+        names.add(PronounSet.Builtins.SHE.toFullString());
+        names.add(PronounSet.Builtins.THEY.toFullString());
+        names.add(PronounSet.Builtins.IT.toFullString()); // If IT is added
+
+        // Add Special sets by their names (which is their toString() and toFullString())
+        names.add(PronounSet.Builtins.ASK.toString());   // Ask
+        names.add(PronounSet.Builtins.ANY.toString());   // Any
+        names.add(PronounSet.Builtins.UNSET.toString()); // Unset
+
+        // Filter out any potentially problematic or overly verbose internal keys if necessary,
+        // though for now, showing all keys from predefinedLookup is okay.
+        // Convert to list and sort for consistent output.
+        return names.stream().sorted().collect(Collectors.toList());
+    }
+
+    private PronounSet canonicalize(PronounSet set) {
+        if (set == null) return null;
+
+        // Check against Special Sets by their unique names
+        if (set.toString().equalsIgnoreCase(PronounSet.Builtins.ASK.toString())) return PronounSet.Builtins.ASK;
+        if (set.toString().equalsIgnoreCase(PronounSet.Builtins.ANY.toString())) return PronounSet.Builtins.ANY;
+        if (set.toString().equalsIgnoreCase(PronounSet.Builtins.UNSET.toString())) return PronounSet.Builtins.UNSET;
+
+        // Check against other Builtins by comparing all 5 grammatical forms and plurality.
+        if (set.subjective().equalsIgnoreCase(PronounSet.Builtins.HE.subjective()) &&
+            set.objective().equalsIgnoreCase(PronounSet.Builtins.HE.objective()) &&
+            set.possessiveAdj().equalsIgnoreCase(PronounSet.Builtins.HE.possessiveAdj()) &&
+            set.possessive().equalsIgnoreCase(PronounSet.Builtins.HE.possessive()) &&
+            set.reflexive().equalsIgnoreCase(PronounSet.Builtins.HE.reflexive()) &&
+            set.plural() == PronounSet.Builtins.HE.plural()
+        ) return PronounSet.Builtins.HE;
+
+        if (set.subjective().equalsIgnoreCase(PronounSet.Builtins.SHE.subjective()) &&
+            set.objective().equalsIgnoreCase(PronounSet.Builtins.SHE.objective()) &&
+            set.possessiveAdj().equalsIgnoreCase(PronounSet.Builtins.SHE.possessiveAdj()) &&
+            set.possessive().equalsIgnoreCase(PronounSet.Builtins.SHE.possessive()) &&
+            set.reflexive().equalsIgnoreCase(PronounSet.Builtins.SHE.reflexive()) &&
+            set.plural() == PronounSet.Builtins.SHE.plural()
+        ) return PronounSet.Builtins.SHE;
+
+        if (set.subjective().equalsIgnoreCase(PronounSet.Builtins.THEY.subjective()) &&
+            set.objective().equalsIgnoreCase(PronounSet.Builtins.THEY.objective()) &&
+            set.possessiveAdj().equalsIgnoreCase(PronounSet.Builtins.THEY.possessiveAdj()) &&
+            set.possessive().equalsIgnoreCase(PronounSet.Builtins.THEY.possessive()) &&
+            set.reflexive().equalsIgnoreCase(PronounSet.Builtins.THEY.reflexive()) &&
+            set.plural() == PronounSet.Builtins.THEY.plural()
+        ) return PronounSet.Builtins.THEY;
+
+        if (set.subjective().equalsIgnoreCase(PronounSet.Builtins.IT.subjective()) &&
+            set.objective().equalsIgnoreCase(PronounSet.Builtins.IT.objective()) &&
+            set.possessiveAdj().equalsIgnoreCase(PronounSet.Builtins.IT.possessiveAdj()) &&
+            set.possessive().equalsIgnoreCase(PronounSet.Builtins.IT.possessive()) &&
+            set.reflexive().equalsIgnoreCase(PronounSet.Builtins.IT.reflexive()) &&
+            set.plural() == PronounSet.Builtins.IT.plural()
+        ) return PronounSet.Builtins.IT;
+
+        return set; // Return original if no builtin match
+    }
+
+    private PronounSet findPredefinedBySubjectiveOrShortform(String key) {
+        String lowerKey = key.toLowerCase(Locale.ROOT);
+
+        // Direct lookup first (covers cases like "he/him", "ask")
+        PronounSet directMatch = predefinedLookup.get(lowerKey);
+        if (directMatch != null) {
+            return directMatch;
+        }
+
+        // If not direct, iterate and check subjective forms and string representations
+        for (PronounSet ps : predefinedLookup.values()) {
+            if (ps.subjective().equalsIgnoreCase(lowerKey)) {
+                return ps;
+            }
+            // toString() for BuiltinPronounSet is "subj/obj", for SpecialPronounSet is its name.
+            if (ps.toString().equalsIgnoreCase(lowerKey)) {
+                return ps;
+            }
+            // toFullString() for BuiltinPronounSet is "subj/obj/adj/poss/refl", for SpecialPronounSet is its name.
+            // This might be redundant if toString() already covers common cases, but good for completeness.
+            if (ps.toFullString().equalsIgnoreCase(lowerKey)) {
+                return ps;
+            }
+        }
+        return null; // Not found
+    }
 }

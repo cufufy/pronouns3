@@ -44,7 +44,7 @@ public class SetCommand implements ProNounsCommand {
         }
 
         if (pronouns.isEmpty()) {
-            sender.sendMessage(f.translated("pronouns.command.set.badSet", value));
+            sender.sendMessage(f.translated("pronouns.command.set.parseError", value));
             return;
         }
 

@@ -11,6 +11,7 @@ public enum ProNounsPermission {
         3),
 
     GET("pronouns.get", "Access to /pn get", 0),
+    LIST("pronouns.list", "Access to /pn list to see available pronouns", 0),
 
     UPDATE("pronouns.update",
         "Access to /pn update",

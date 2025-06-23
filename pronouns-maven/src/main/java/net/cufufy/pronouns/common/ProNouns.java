@@ -57,6 +57,7 @@ public class ProNouns implements ProNounsPlugin {
                 new GetCommand(this, platform),
                 new SetCommand(this, platform),
                 new ClearCommand(this, platform),
+                new ListCommand(this, platform), // Added ListCommand
                 new VersionCommand(this, platform),
                 new DebugCommand(this, platform),
                 new UpdateCommand(this),
